@@ -17,6 +17,11 @@ class CustomNavigationBar extends StatefulWidget {
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   final List<NavigationItem> _items = [
     NavigationItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home,
+      label: 'Accueil',
+    ),
+    NavigationItem(
       icon: Icons.article_outlined,
       activeIcon: Icons.article,
       label: 'Actualités',
@@ -25,11 +30,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       icon: Icons.group_outlined,
       activeIcon: Icons.group,
       label: 'Communautés',
-    ),
-    NavigationItem(
-      icon: Icons.play_circle_outline,
-      activeIcon: Icons.play_circle,
-      label: 'Médias',
     ),
     NavigationItem(
       icon: Icons.calendar_month_outlined,

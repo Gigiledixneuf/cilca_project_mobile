@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:odc_mobile_template/pages/ui/mainNavigation/mainNavigation.dart';
 
 import '../../../business/models/user/authentication.dart';
 import '../../../main.dart';
@@ -30,7 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       Future.delayed(Duration.zero, () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => MainNavigationPage()),
         );
       });
     }
@@ -169,7 +170,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                                   if (res == true) {
                                     Future.delayed(const Duration(seconds: 2), () {
-                                      navigation.replace('/app/home');
+                                      navigation.replace('/public/ui/mainNavigation');
                                     });
                                   }
                                 }

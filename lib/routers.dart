@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:odc_mobile_template/pages/auth/login/LoginPage.dart';
 import 'package:odc_mobile_template/pages/auth/register/RegisterPage.dart';
+import 'package:odc_mobile_template/pages/ui/mainNavigation/mainNavigation.dart';
 import 'pages/404/not_found_page.dart';
 import 'pages/intro/appCtrl.dart';
 import 'pages/intro/introPage.dart';
@@ -28,6 +29,14 @@ final routerConfigProvider = Provider<GoRouter>((ref) {
    routes publics
   */
   final noAuthRoutes = [
+    GoRoute(
+      path: "/public/ui/mainNavigation",
+      name: 'main_navigation',
+      builder: (ctx, state) {
+        return MainNavigationPage();
+      },
+    ),
+
     GoRoute(
       path: "/public/intro",
       name: 'intro_page',

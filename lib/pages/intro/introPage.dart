@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../main.dart';
 import '../../utils/navigationUtils.dart';
 import 'appCtrl.dart';
@@ -9,17 +8,19 @@ class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-    path.lineTo(0, size.height - 40);
+    path.lineTo(0, size.height - 60);  // Point de départ plus haut
 
-    var firstControlPoint = Offset(size.width * 0.25, size.height - 20);
-    var firstEndPoint = Offset(size.width * 0.5, size.height - 40);
+    // Première courbe plus prononcée
+    var firstControlPoint = Offset(size.width * 0.25, size.height - 10);
+    var firstEndPoint = Offset(size.width * 0.4, size.height - 50);
     path.quadraticBezierTo(
       firstControlPoint.dx, firstControlPoint.dy,
       firstEndPoint.dx, firstEndPoint.dy,
     );
 
-    var secondControlPoint = Offset(size.width * 0.75, size.height - 60);
-    var secondEndPoint = Offset(size.width, size.height - 30);
+    // Seconde courbe plus dynamique
+    var secondControlPoint = Offset(size.width * 0.65, size.height - 80);
+    var secondEndPoint = Offset(size.width, size.height - 20);
     path.quadraticBezierTo(
       secondControlPoint.dx, secondControlPoint.dy,
       secondEndPoint.dx, secondEndPoint.dy,
@@ -55,17 +56,10 @@ class _IntroPageState extends ConsumerState<IntroPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
-
-    final navigation = getIt.get<NavigationUtils>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -110,44 +104,36 @@ class _IntroPageState extends ConsumerState<IntroPage> {
                       borderRadius: BorderRadius.circular(20),
                       child: Column(
                         children: [
-                          // Hero section with wave effect
-                          Container(
+                          // Hero section with custom wave effect
+                          SizedBox(
                             height: screenHeight * 0.4,
                             width: double.infinity,
-                            child: ClipPath(
-                              clipper: WaveClipper(),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      const Color(0xFF7B4397),
-                                      const Color(0xFF7B4397).withOpacity(0.8),
-                                    ],
+                            child: Stack(
+                              children: [
+                                // Image de fond
+                                Positioned.fill(
+                                  child: Image.asset(
+                                  "assets/communaute/proches.jpg",
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image,
-                                        size: 60,
-                                        color: Colors.white54,
+                                // Effet de vague stylisé
+                                ClipPath(
+                                  clipper: WaveClipper(),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Color(0xFF7B4397).withOpacity(0.4),
+                                        ],
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Image à ajouter',
-                                        style: TextStyle(
-                                          color: Colors.white54,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
 
@@ -159,9 +145,8 @@ class _IntroPageState extends ConsumerState<IntroPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Title
                                 Text(
-                                  'Ne restons pas seul.e.s face au cancer !',
+                                  "Ensemble, transformons l'espoir en force contre le cancer",
                                   style: TextStyle(
                                     fontSize: isTablet ? 28 : 24,
                                     fontWeight: FontWeight.bold,
@@ -172,9 +157,8 @@ class _IntroPageState extends ConsumerState<IntroPage> {
 
                                 SizedBox(height: isTablet ? 20 : 16),
 
-                                // Description
                                 Text(
-                                  'Pour s\'informer, échanger, retrouver des ressources utiles, inscrivez-vous sur nos réseaux sociaux privés, conçus et développés par l\'association Patients en réseau.',
+                                  "Rejoignez une communauté bienveillante où patients, proches et experts partagent leurs expériences et ressources pour mieux avancer ensemble.",
                                   style: TextStyle(
                                     fontSize: isTablet ? 16 : 14,
                                     color: Colors.black54,
@@ -216,17 +200,14 @@ class _IntroPageState extends ConsumerState<IntroPage> {
   Widget _buildButtonsSection(BuildContext context, bool isTablet) {
     return Column(
       children: [
-        // Sign up button with enhanced styling
+        // Sign up button
         Container(
           width: double.infinity,
           height: isTablet ? 56 : 52,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF7B4397),
-                Color(0xFF9C4D97),
-              ],
+              colors: [Color(0xFF7B4397), Color(0xFF9C4D97)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -242,24 +223,13 @@ class _IntroPageState extends ConsumerState<IntroPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(26),
-              onTap: () {
-                Future.delayed(Duration(seconds: 1), () {
-                  navigation.replace('/public/auth/registerPage');
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                ),
+              onTap: () => navigation.replace('/public/auth/registerPage'),
+              child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.person_add,
-                      color: Colors.white,
-                      size: isTablet ? 22 : 20,
-                    ),
-                    const SizedBox(width: 8),
+                    Icon(Icons.person_add, color: Colors.white, size: isTablet ? 22 : 20),
+                    SizedBox(width: 8),
                     Text(
                       'S\'inscrire',
                       style: TextStyle(
@@ -275,18 +245,15 @@ class _IntroPageState extends ConsumerState<IntroPage> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
-        // Login button with enhanced styling
+        // Login button
         Container(
           width: double.infinity,
           height: isTablet ? 56 : 52,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
-            border: Border.all(
-              color: Colors.black26,
-              width: 1.5,
-            ),
+            border: Border.all(color: Colors.black26, width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -300,29 +267,23 @@ class _IntroPageState extends ConsumerState<IntroPage> {
             borderRadius: BorderRadius.circular(26),
             child: InkWell(
               borderRadius: BorderRadius.circular(26),
-              onTap: () {
-                Future.delayed(Duration(seconds: 1), () {
-                  navigation.replace('/public/auth/loginPage');
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.login,
-                    color: Colors.black87,
-                    size: isTablet ? 22 : 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Connexion',
-                    style: TextStyle(
-                      fontSize: isTablet ? 18 : 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+              onTap: () => navigation.replace('/public/auth/loginPage'),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.login, color: Colors.black87, size: isTablet ? 22 : 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Connexion',
+                      style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -330,47 +291,28 @@ class _IntroPageState extends ConsumerState<IntroPage> {
 
         SizedBox(height: isTablet ? 24 : 20),
 
-        // Enhanced Guest link with better styling
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.grey.withOpacity(0.05),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () {
-              Future.delayed(Duration(seconds: 1), () {
-                navigation.replace('/app/home');
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.visibility,
-                    size: isTablet ? 18 : 16,
+        // Guest link
+        InkWell(
+          onTap: () => navigation.replace('/public/ui/mainNavigation'),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.visibility, size: isTablet ? 18 : 16, color: Colors.black54),
+                SizedBox(width: 6),
+                Text(
+                  'Continuer en tant qu\'invité',
+                  style: TextStyle(
+                    fontSize: isTablet ? 16 : 14,
                     color: Colors.black54,
+                    decoration: TextDecoration.underline,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Continuer en tant qu\'invité',
-                    style: TextStyle(
-                      fontSize: isTablet ? 16 : 14,
-                      color: Colors.black54,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-
-        SizedBox(height: isTablet ? 20 : 16),
       ],
     );
   }

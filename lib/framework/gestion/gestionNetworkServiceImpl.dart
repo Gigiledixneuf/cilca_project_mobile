@@ -7,8 +7,9 @@ import '../../utils/http/HttpUtils.dart';
 class GestionNetworkServiceImpl implements GestionNetworkService {
   String baseUrl;
   HttpUtils httpUtils;
+  String imageUrl;
 
-  GestionNetworkServiceImpl({required this.baseUrl, required this.httpUtils});
+  GestionNetworkServiceImpl({required this.baseUrl, required this.httpUtils, required this.imageUrl});
 
   @override
   Future<Article> recupererArticle(int id) {
@@ -22,7 +23,7 @@ class GestionNetworkServiceImpl implements GestionNetworkService {
     var response = await httpUtils.getData(url);
     var listData = jsonDecode(response);
     var listArticles =
-        listData.map<Article>((e) => Article.fromJson(e)).toList();
+        listData.map<Article>((e) => Article.fromJson(e, imageUrl:  imageUrl)).toList();
     return listArticles;
   }
 }
