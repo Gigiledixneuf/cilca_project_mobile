@@ -28,6 +28,8 @@ dependencies:
   uuid: ^4.4.0
   get_storage: ^2.1.1
   path: ^1.9.1
+  carousel_slider: ^5.1.1
+
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +58,8 @@ flutter:
   assets:
       - assets/
       - assets/fake/
+      - assets/communaute/
+      - assets/article/
       - .env
   #   - images/a_dot_ham.jpeg
 

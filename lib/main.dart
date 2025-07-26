@@ -3,7 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:odc_mobile_template/business/services/article/articleNetworkService.dart';
+import 'package:odc_mobile_template/business/services/communaute/forumNetworkService.dart';
 import 'package:odc_mobile_template/business/services/user/userNetworkService.dart';
+import 'package:odc_mobile_template/framework/article/articleServiceImpl.dart';
+import 'package:odc_mobile_template/framework/communaute/forumServiceImpl.dart';
 import 'package:odc_mobile_template/framework/utils/localStorage/getStorageImpl.dart';
 import 'package:odc_mobile_template/utils/navigationUtils.dart';
 import 'business/services/gestion/gestionLocalService.dart';
@@ -22,13 +26,14 @@ GetIt getIt = GetIt.instance;
 void configureImplementations() {
   var httpUtils = RemoteHttpUtils();
   var baseUrl = dotenv.env['BASE_URL'] ?? '';
+  var imageUrl   = dotenv.env['IMAGE_URL']??'';
   var localManager=GetStorageImpl();
   
   getIt.registerLazySingleton<NavigationUtils>(() => NavigationUtils());
-  getIt.registerLazySingleton<GestionNetworkService>(() => GestionNetworkServiceImpl(baseUrl: baseUrl, httpUtils: httpUtils));
-  getIt.registerLazySingleton<GestionLocalService>(() => GestionLocalServiceImpl());
   getIt.registerLazySingleton<UserNetworkService>(() => UserNetworkServiceImpl(baseUrl: baseUrl, httpUtils: httpUtils));
   getIt.registerLazySingleton<UserLocalService>(() => UserLocalServiceImpl(box: localManager));
+  getIt.registerLazySingleton<ForumNetworkService>(()=> ForumServiceImpl(baseUrl : baseUrl, httpUtils: httpUtils));
+  getIt.registerLazySingleton<ArticleNetworkService>(()=> ArticleServiceImpl(imageUrl: imageUrl, baseUrl: baseUrl, httpUtils: httpUtils));
 }
 
 void main() async {

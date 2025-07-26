@@ -100,7 +100,7 @@ class _EvenementPageState extends State<Evenementpage>{
                   ],
                 ),
                 child: const Text(
-                  'Toutes',
+                  'Tous les Évènements',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -133,7 +133,7 @@ class _EvenementPageState extends State<Evenementpage>{
                   ],
                 ),
                 child: const Text(
-                  'Évènements',
+                  'Calendrier',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
