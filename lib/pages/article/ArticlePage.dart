@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:odc_mobile_template/business/models/communaute/forum.dart';
-import 'ForumCtrl.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'ArticleCtrl.dart';
 
-class ForumPage extends ConsumerStatefulWidget {
-  const ForumPage({super.key});
+class ArticlePage extends ConsumerStatefulWidget {
+  const ArticlePage({super.key});
 
   @override
-  ConsumerState<ForumPage> createState() => _ForumPageState();
+  ConsumerState<ArticlePage> createState() => _ArticlePageState();
 }
 
-class _ForumPageState extends ConsumerState<ForumPage> {
+class _ArticlePageState extends ConsumerState<ArticlePage> {
   @override
   void initState() {
     super.initState();
     Future.microtask(() =>
-        ref.read(ForumCtrlProvider.notifier).getForums());
+      ref.read(ArticleCtrlProvider.notifier).getArticles()
+    );
   }
 
   @override
@@ -48,7 +50,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      'Rejoindre un salon',
+                      'Explorer tous les articles',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -61,7 +63,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
               ),
             ),
             const SizedBox(height: 24),
-            _buildForumCards(),
+            _buildNewsCards(),
             const SizedBox(height: 100),
           ],
         ),
@@ -83,7 +85,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
         ),
       ),
       title: const Text(
-        'Communauté',
+        'Actualités',
         style: TextStyle(
           color: Colors.white,
           fontSize: 20,
@@ -155,18 +157,22 @@ class _ForumPageState extends ConsumerState<ForumPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: Color(0xFF7B4397),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
               borderRadius: BorderRadius.circular(25),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                  color: const Color(0xFFFF6B35).withOpacity(0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: const Text(
-              'Tous les forums',
+              'Tous les articles',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
@@ -180,11 +186,12 @@ class _ForumPageState extends ConsumerState<ForumPage> {
     );
   }
 
-  Widget _buildForumCards() {
-    final state = ref.watch(ForumCtrlProvider);
-    final forums = state.forums;
+  Widget _buildNewsCards() {
+    final state = ref.watch(ArticleCtrlProvider);
+    final articles = state.articles;
     final isLoading = state.isLoading ?? false;
     final error = state.error;
+
 
     if (isLoading) {
       return Container(
@@ -198,7 +205,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Chargement des forums...',
+                'Chargement des articles...',
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 16,
@@ -249,7 +256,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
       );
     }
 
-    if (forums.isEmpty) {
+    if (articles.isEmpty) {
       return Container(
         margin: const EdgeInsets.all(20),
         padding: const EdgeInsets.all(32),
@@ -261,13 +268,13 @@ class _ForumPageState extends ConsumerState<ForumPage> {
         child: Column(
           children: [
             Icon(
-              Icons.forum_outlined,
+              Icons.article_outlined,
               color: Colors.grey[400],
               size: 64,
             ),
             const SizedBox(height: 16),
             Text(
-              'Aucun forum disponible',
+              'Aucun article disponible',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 18,
@@ -276,7 +283,7 @@ class _ForumPageState extends ConsumerState<ForumPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Revenez plus tard pour découvrir nos communautés.',
+              'Revenez plus tard pour découvrir nos dernières actualités.',
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 14,
@@ -288,38 +295,49 @@ class _ForumPageState extends ConsumerState<ForumPage> {
       );
     }
 
-    //@TODO : rajouter la redirection vers une page de sujets en passant l'id dans le button et route
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        children: forums.map<Widget>((forum) {
-          return ForumCard(
-            forum: forum,
-            onTap: () {
-              debugPrint("Forum tapé : ${forum.title}");
-              // Tu peux naviguer ici vers une page de sujets
-              // Navigator.push(...);
-            },
+        children: articles.map<Widget>((article) {
+          return NewsCard(
+            image: article.image,
+            title: article.title,
+            desc: article.desc,
+            category: article.category,
+            date: article.date,
+            //@TODO: aouter la redirection dans single
+            onTap: () => (article.id),
           );
         }).toList(),
       ),
     );
   }
+
 }
 
-class ForumCard extends StatelessWidget {
-
-  final Forum forum;
+class NewsCard extends StatelessWidget {
+  final String image;
+  final String title;
+  final String desc;
+  final String category;
+  final DateTime date;
   final VoidCallback onTap;
 
-  const ForumCard({
+  const NewsCard({
     super.key,
-    required this.forum,
+    required this.image,
+    required this.title,
+    required this.desc,
+    required this.category,
+    required this.date,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final formattedDate = "${date.day}/${date.month}/${date.year}";
+    final cleanedImageUrl = _cleanImageUrl(image);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
@@ -351,43 +369,7 @@ class ForumCard extends StatelessWidget {
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
                 ),
-                child: Image.asset(
-                  forum.hardcodedImage,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.forum_outlined,
-                            size: 48,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Image non disponible',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                child: _buildImageWidget(cleanedImageUrl),
               ),
 
               // Content section
@@ -396,9 +378,63 @@ class ForumCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Category and date row
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFE91E63), Color(0xFFAD1457)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            category,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                size: 12,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                formattedDate,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
                     // Title
                     Text(
-                      forum.title,
+                      title,
                       style: const TextStyle(
                         color: Colors.black87,
                         fontSize: 18,
@@ -411,7 +447,9 @@ class ForumCard extends StatelessWidget {
 
                     // Description
                     Text(
-                      forum.description,
+                      desc,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,
@@ -421,59 +459,22 @@ class ForumCard extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // Members count and join indicator
+                    // Read more indicator
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF10B981), Color(0xFF059669)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.people,
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                forum.subscriberCount == 0
-                                    ? 'Aucun membre'
-                                    : '${forum.subscriberCount} membres',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          'Lire la suite',
+                          style: TextStyle(
+                            color: const Color(0xFF7B4397),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Text(
-                              'Rejoindre',
-                              style: TextStyle(
-                                color: const Color(0xFF7B4397),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward,
-                              size: 16,
-                              color: const Color(0xFF7B4397),
-                            ),
-                          ],
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward,
+                          size: 16,
+                          color: const Color(0xFF7B4397),
                         ),
                       ],
                     ),
@@ -484,6 +485,100 @@ class ForumCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  String _cleanImageUrl(String url) {
+    // Nettoyer les URLs réseau
+    if (url.startsWith('http')) {
+      return url
+          .trim()
+          .replaceAll(' ', '%20')
+          .replaceFirst('http://', 'https://');
+    }
+    return url;
+  }
+
+  Widget _buildImageWidget(String url) {
+    if (url.startsWith('assets/')) {
+      return Image.asset(
+        url,
+        height: 200,
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Image.network(
+      url,
+      height: 200,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                      : null,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7B4397)),
+                  strokeWidth: 3,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Chargement...',
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        debugPrint('Erreur de chargement image: $error - URL: $url');
+        return Container(
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.broken_image_outlined,
+                size: 48,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Image non disponible',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

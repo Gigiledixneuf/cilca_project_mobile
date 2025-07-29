@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:odc_mobile_template/pages/article/ArticlePage.dart';
+import 'package:odc_mobile_template/pages/articleSingle/ArticleSinglePage.dart';
 import 'package:odc_mobile_template/pages/auth/login/LoginPage.dart';
 import 'package:odc_mobile_template/pages/auth/register/RegisterPage.dart';
+import 'package:odc_mobile_template/pages/communaute/forum/ForumPage.dart';
 import 'package:odc_mobile_template/pages/ui/mainNavigation/mainNavigation.dart';
 import 'pages/404/not_found_page.dart';
 import 'pages/intro/appCtrl.dart';
@@ -55,6 +58,24 @@ final routerConfigProvider = Provider<GoRouter>((ref) {
         name: "register_page",
         builder: (ctx, state){
           return RegisterPage();
+        }),
+    GoRoute(
+        path: "/public/communaute/forum",
+        name: "forum_page",
+        builder: (ctx, state){
+          return ForumPage();
+        }),
+    GoRoute(
+        path: "/public/article",
+        name: "article_explorer_page",
+        builder: (ctx, state){
+          return ArticlePage();
+        }),
+    GoRoute(
+        path: "/public/article_single",
+        name: "article_single_page",
+        builder: (ctx, state){
+          return ArticleDetailPage();
         }),
   ];
 

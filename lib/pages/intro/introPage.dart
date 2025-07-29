@@ -62,7 +62,7 @@ class _IntroPageState extends ConsumerState<IntroPage> {
     final isTablet = screenWidth > 600;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -70,126 +70,58 @@ class _IntroPageState extends ConsumerState<IntroPage> {
             constraints: BoxConstraints(
               minHeight: screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
             ),
-            child: Padding(
-              padding: EdgeInsets.all(isTablet ? 32.0 : 20.0),
-              child: Column(
-                children: [
-                  // Top handle indicator
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 8, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+            child: Column(
+              children: [
+                // Top handle indicator
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 16, bottom: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(2),
                   ),
+                ),
 
-                  // Main content card
-                  Container(
-                    constraints: BoxConstraints(
-                      minHeight: screenHeight * 0.75,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Column(
-                        children: [
-                          // Hero section with custom wave effect
-                          SizedBox(
-                            height: screenHeight * 0.4,
-                            width: double.infinity,
-                            child: Stack(
-                              children: [
-                                // Image de fond
-                                Positioned.fill(
-                                  child: Image.asset(
-                                  "assets/communaute/proches.jpg",
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                // Effet de vague stylisé
-                                ClipPath(
-                                  clipper: WaveClipper(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          Color(0xFF7B4397).withOpacity(0.4),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Content section
-                          Container(
-                            width: double.infinity,
-                            color: Colors.white,
-                            padding: EdgeInsets.all(isTablet ? 32 : 24),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Ensemble, transformons l'espoir en force contre le cancer",
-                                  style: TextStyle(
-                                    fontSize: isTablet ? 28 : 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                    height: 1.2,
-                                  ),
-                                ),
-
-                                SizedBox(height: isTablet ? 20 : 16),
-
-                                Text(
-                                  "Rejoignez une communauté bienveillante où patients, proches et experts partagent leurs expériences et ressources pour mieux avancer ensemble.",
-                                  style: TextStyle(
-                                    fontSize: isTablet ? 16 : 14,
-                                    color: Colors.black54,
-                                    height: 1.4,
-                                  ),
-                                ),
-
-                                SizedBox(height: isTablet ? 40 : 32),
-
-                                // Buttons section
-                                _buildButtonsSection(context, isTablet),
-                              ],
-                            ),
-                          ),
-                        ],
+                // Main content container
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: isTablet ? 32 : 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                    ),
+                    ],
                   ),
+                  child: Column(
+                    children: [
+                      // Image section avec arrondi en bas
+                      _buildHeroImageSection(isTablet),
 
-                  // Bottom indicator
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 20, bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                      // Content section
+                      _buildContentSection(context, isTablet),
+                    ],
                   ),
-                ],
-              ),
+                ),
+
+                // Bottom spacing
+                SizedBox(height: isTablet ? 40 : 32),
+
+                // Bottom indicator
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -197,10 +129,124 @@ class _IntroPageState extends ConsumerState<IntroPage> {
     );
   }
 
+  Widget _buildHeroImageSection(bool isTablet) {
+    final imageHeight = isTablet ? 320.0 : 280.0;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+        bottomLeft: Radius.circular(100),
+        bottomRight: Radius.circular(100),
+      ),
+      child: Container(
+        height: imageHeight,
+        width: double.infinity,
+        child: Image.asset(
+          "assets/communaute/proches.jpg",
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback en cas d'erreur
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.image,
+                  size: 64,
+                  color: Colors.grey,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentSection(BuildContext context, bool isTablet) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(
+        isTablet ? 40 : 24,
+        isTablet ? 32 : 24,
+        isTablet ? 40 : 24,
+        isTablet ? 40 : 32,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Titre principal
+          _buildTitleSection(isTablet),
+
+          SizedBox(height: isTablet ? 24 : 20),
+
+          // Description
+          _buildDescriptionSection(isTablet),
+
+          SizedBox(height: isTablet ? 40 : 32),
+
+          // Boutons
+          _buildButtonsSection(context, isTablet),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitleSection(bool isTablet) {
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontSize: isTablet ? 28 : 24,
+          fontWeight: FontWeight.bold,
+          height: 1.3,
+          color: Colors.black87,
+        ),
+        children: [
+          const TextSpan(text: "Ensemble, transformons "),
+          TextSpan(
+            text: "l'espoir",
+            style: TextStyle(
+              color: const Color(0xFF7B4397),
+            ),
+          ),
+          const TextSpan(text: " en "),
+          TextSpan(
+            text: "force",
+            style: TextStyle(
+              color: const Color(0xFF7B4397),
+            ),
+          ),
+          const TextSpan(text: " contre le cancer"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection(bool isTablet) {
+    return Text(
+      "Rejoignez une communauté bienveillante où patients, proches et experts partagent leurs expériences et ressources pour mieux avancer ensemble.",
+      style: TextStyle(
+        fontSize: isTablet ? 16 : 14,
+        color: Colors.black54,
+        height: 1.5,
+      ),
+    );
+  }
+
   Widget _buildButtonsSection(BuildContext context, bool isTablet) {
     return Column(
       children: [
-        // Sign up button
+        // Bouton S'inscrire avec icône
         Container(
           width: double.infinity,
           height: isTablet ? 56 : 52,
@@ -214,8 +260,8 @@ class _IntroPageState extends ConsumerState<IntroPage> {
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF7B4397).withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -223,19 +269,26 @@ class _IntroPageState extends ConsumerState<IntroPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(26),
-              onTap: () => navigation.replace('/public/auth/registerPage'),
+              onTap: () {
+                navigation.replace('/public/auth/registerPage');
+              },
               child: Center(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.person_add, color: Colors.white, size: isTablet ? 22 : 20),
-                    SizedBox(width: 8),
+                    Icon(
+                      Icons.person_add,
+                      color: Colors.white,
+                      size: isTablet ? 20 : 18,
+                    ),
+                    SizedBox(width: isTablet ? 12 : 10),
                     Text(
                       'S\'inscrire',
                       style: TextStyle(
                         fontSize: isTablet ? 18 : 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
@@ -245,35 +298,37 @@ class _IntroPageState extends ConsumerState<IntroPage> {
           ),
         ),
 
-        SizedBox(height: 16),
+        SizedBox(height: isTablet ? 24 : 20),
 
-        // Login button
+        // Bouton Connexion avec icône
         Container(
           width: double.infinity,
           height: isTablet ? 56 : 52,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: Colors.black26, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            border: Border.all(
+              color: Colors.black12,
+              width: 1.5,
+            ),
+            color: Colors.white,
           ),
           child: Material(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(26),
+            color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(26),
-              onTap: () => navigation.replace('/public/auth/loginPage'),
+              onTap: () {
+                navigation.replace('/public/auth/loginPage');
+              },
               child: Center(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.login, color: Colors.black87, size: isTablet ? 22 : 20),
-                    SizedBox(width: 8),
+                    Icon(
+                      Icons.login,
+                      color: Colors.black87,
+                      size: isTablet ? 20 : 18,
+                    ),
+                    SizedBox(width: isTablet ? 12 : 10),
                     Text(
                       'Connexion',
                       style: TextStyle(
@@ -289,24 +344,31 @@ class _IntroPageState extends ConsumerState<IntroPage> {
           ),
         ),
 
-        SizedBox(height: isTablet ? 24 : 20),
+        SizedBox(height: isTablet ? 20 : 16),
 
-        // Guest link
+        // Lien invité avec icône
         InkWell(
-          onTap: () => navigation.replace('/public/ui/mainNavigation'),
+          onTap: () {
+            navigation.replace('/public/ui/mainNavigation');
+          },
+          borderRadius: BorderRadius.circular(8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.visibility, size: isTablet ? 18 : 16, color: Colors.black54),
-                SizedBox(width: 6),
+                Icon(
+                  Icons.visibility,
+                  color: Colors.black45,
+                  size: isTablet ? 18 : 16,
+                ),
+                SizedBox(width: isTablet ? 8 : 6),
                 Text(
                   'Continuer en tant qu\'invité',
                   style: TextStyle(
                     fontSize: isTablet ? 16 : 14,
-                    color: Colors.black54,
-                    decoration: TextDecoration.underline,
+                    color: Colors.black45,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],

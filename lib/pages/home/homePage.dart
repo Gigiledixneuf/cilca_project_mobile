@@ -1,121 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
+import 'package:odc_mobile_template/business/models/article/article.dart';
+import 'package:odc_mobile_template/main.dart';
+import 'package:odc_mobile_template/pages/article/ArticlePage.dart';
+import 'package:odc_mobile_template/utils/navigationUtils.dart';
+import 'homeCtrl.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin {
+  var navigattion = getIt.get<NavigationUtils>();
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  // Couleurs du thème amélioré
+  // Couleurs du thème
   static const Color primaryPurple = Color(0xFF7B4397);
   static const Color secondaryPurple = Color(0xFF8B5CF6);
-  static const Color accentOrange = Color(0xFFFF6B35);
+  static const Color accentOrange = Color(0xFF7B4397);
   static const Color lightPurple = Color(0xFFF3F4F6);
   static const Color darkPurple = Color(0xFF4C1D95);
-
-  final List<Map<String, dynamic>> _featuredArticles = [
-    {
-      'id': '1',
-      'title': 'Nouveaux traitements prometteurs en 2024',
-      'image': "https://images.pexels.com/photos/5482986/pexels-photo-5482986.jpeg",
-      'category': 'Recherche',
-      'date': '15 mars 2024',
-      'readTime': '5 min'
-    },
-    {
-      'id': '2',
-      'title': 'Comment gérer la fatigue post-traitement',
-      'image': "https://images.pexels.com/photos/5482975/pexels-photo-5482975.jpeg",
-      'category': 'Conseils',
-      'date': '8 mars 2024',
-      'readTime': '3 min'
-    },
-    {
-      'id': '3',
-      'title': 'Témoignage : Mon combat contre le cancer du sein',
-      'image': "https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg",
-      'category': 'Témoignage',
-      'date': '1 mars 2024',
-      'readTime': '7 min'
-    },
-  ];
-
-  final List<Map<String, dynamic>> _latestArticles = [
-    {
-      'id': '4',
-      'title': 'Alimentation et cancer : les nouveaux conseils',
-      'image': "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
-      'category': 'Nutrition',
-      'date': '28 fév. 2024',
-      'readTime': '4 min'
-    },
-    {
-      'id': '5',
-      'title': 'Ateliers de bien-être mars 2024',
-      'image': "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg",
-      'category': 'Événement',
-      'date': '22 fév. 2024',
-      'readTime': '2 min'
-    },
-
-    {
-      'id': '6',
-      'title': 'Ateliers de bien-être mars 2024',
-      'image': "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg",
-      'category': 'Événement',
-      'date': '22 fév. 2024',
-      'readTime': '2 min'
-    },
-
-    {
-      'id': '7',
-      'title': 'Ateliers de bien-être mars 2024',
-      'image': "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg",
-      'category': 'Événement',
-      'date': '22 fév. 2024',
-      'readTime': '2 min'
-    },
-
-    {
-      'id': '8',
-      'title': 'Ateliers de bien-être mars 2024',
-      'image': "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg",
-      'category': 'Événement',
-      'date': '22 fév. 2024',
-      'readTime': '2 min'
-    },
-  ];
-
-  final List<Map<String, dynamic>> _testimonials = [
-    {
-      'id': 't1',
-      'author': 'Marie, 42 ans',
-      'text': 'Cette communauté m\'a donné la force de me battre quand j\'étais au plus bas. Merci à tous pour votre soutien. Cette communauté m\'a donné la force de me battre quand j\'étais au plus bas. Merci à tous pour votre soutien.',
-      'avatar': 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-      'rating': 5
-    },
-    {
-      'id': 't2',
-      'author': 'Pierre, 35 ans',
-      'text': 'Cette communauté m\'a donné la force de me battre quand j\'étais au plus bas. Merci à tous pour votre soutien. Les conseils partagés ici m\'ont aidé à mieux comprendre les traitements et à moins les subir.',
-      'avatar': 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
-      'rating': 5
-    },
-  ];
-
-  final String _dailyHopeMessage = "Aujourd'hui, souvenez-vous que chaque petit progrès compte. La guérison est un chemin, pas une destination.";
+  static const Color successGreen = Color(0xFF10B981);
+  static const Color warningYellow = Color(0xFFF59E0B);
 
   @override
   void initState() {
     super.initState();
+    _initAnimations();
+    _loadData();
+  }
+
+  void _initAnimations() {
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -124,25 +47,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-
+    ).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
     _fadeController.forward();
     _slideController.forward();
+  }
+
+  void _loadData() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(HomeCtrlProvider.notifier).getFeaturedArticles();
+      ref.read(HomeCtrlProvider.notifier).getLatestArticles();
+    });
   }
 
   @override
@@ -154,6 +76,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(HomeCtrlProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       appBar: _buildModernAppBar(),
@@ -166,15 +90,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Column(
               children: [
                 _buildModernFilterSection(),
-                const SizedBox(height: 20),
-                _buildFeaturedSliderSection(),
                 const SizedBox(height: 32),
-                _buildLatestArticlesSection(),
+                if (state.isLoading && state.featuredArticles.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (state.error != null && state.featuredArticles.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      state.error!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  )
+                else
+                  _buildFeaturedSliderSection(state.featuredArticles),
+                const SizedBox(height: 40),
+                if (state.isLoading && state.latestArticles.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (state.error != null && state.latestArticles.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      state.error!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  )
+                else
+                  _buildLatestArticlesSection(state.latestArticles),
+                const SizedBox(height: 32),
+                _buildHealthTipsSection(),
                 const SizedBox(height: 32),
                 _buildTestimonialsSection(),
                 const SizedBox(height: 32),
                 _buildDailyHopeSection(),
-                const SizedBox(height: 100),
+                const SizedBox(height: 32),
               ],
             ),
           ),
@@ -209,7 +163,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: _navigateToDonationPage,
             icon: const Icon(Icons.favorite, color: Colors.red, size: 18),
             label: const Text(
               'Faire un don',
@@ -279,7 +233,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildModernFilterChip(String label, {bool isSelected = false}) {
+  Widget _buildModernFilterChip(String label, {bool isSelected = true}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -312,7 +266,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildFeaturedSliderSection() {
+  //section pour recuperer les 3 articles du slide
+  Widget _buildFeaturedSliderSection(List<Article> articles) {
     return Column(
       children: [
         Padding(
@@ -342,7 +297,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 16),
         CarouselSlider.builder(
-          itemCount: _featuredArticles.length,
+          itemCount: articles.length,
           options: CarouselOptions(
             autoPlay: true,
             aspectRatio: 16/10,
@@ -352,16 +307,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             autoPlayCurve: Curves.easeInOutCubic,
           ),
           itemBuilder: (context, index, realIndex) {
-            return _buildModernFeaturedCard(_featuredArticles[index]);
+            return _buildModernFeaturedCard(articles[index]);
           },
         ),
       ],
     );
   }
 
-  Widget _buildModernFeaturedCard(Map<String, dynamic> article) {
+  //card pour recuperer les 3 articles du slide
+  Widget _buildModernFeaturedCard(Article article) {
+    final formattedDate = DateFormat('dd MMM yyyy').format(article.date);
+
     return GestureDetector(
-      onTap: () => _navigateToArticleDetail(article['id']),
+      onTap: () => _navigateToArticleDetail(article.id),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -378,10 +336,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              // Image avec effet parallax
               Positioned.fill(
                 child: Image.network(
-                  article['image'],
+                  article.image,
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
@@ -402,7 +359,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   },
                 ),
               ),
-              // Gradient overlay amélioré
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -417,7 +373,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              // Contenu
               Positioned(
                 left: 20,
                 right: 20,
@@ -437,7 +392,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            article['category'],
+                            article.category,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -445,39 +400,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                article['readTime'],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      article['title'],
+                      article.title,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -489,7 +416,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      article['date'],
+                      formattedDate,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: 13,
@@ -505,7 +432,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildLatestArticlesSection() {
+  //section pour recuperer les 5 derniers articles
+  Widget _buildLatestArticlesSection(List<Article> articles) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -549,13 +477,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             height: 260,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: _latestArticles.length,
+              itemCount: articles.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: EdgeInsets.only(
-                    right: index == _latestArticles.length - 1 ? 0 : 16,
+                    right: index == articles.length - 1 ? 0 : 16,
                   ),
-                  child: _buildModernLatestArticleCard(_latestArticles[index]),
+                  child: _buildModernLatestArticleCard(articles[index]),
                 );
               },
             ),
@@ -565,9 +493,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildModernLatestArticleCard(Map<String, dynamic> article) {
+  //card pour recuperer les 5 derniers articles
+  Widget _buildModernLatestArticleCard(Article article) {
+    final formattedDate = DateFormat('dd MMM yyyy').format(article.date);
+
     return GestureDetector(
-      onTap: () => _navigateToArticleDetail(article['id']),
+      onTap: () => _navigateToArticleDetail(article.id),
       child: Container(
         width: 350,
         decoration: BoxDecoration(
@@ -589,7 +520,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Stack(
                 children: [
                   Image.network(
-                    article['image'],
+                    article.image,
                     width: 350,
                     height: 140,
                     fit: BoxFit.cover,
@@ -628,7 +559,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        article['category'],
+                        article.category,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -646,7 +577,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    article['title'],
+                    article.title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -660,26 +591,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   Row(
                     children: [
                       Icon(
-                        Icons.access_time,
+                        Icons.calendar_month_sharp,
                         size: 14,
                         color: Colors.grey[600],
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        article['readTime'],
+                       Text(
+                        formattedDate,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        article['date'],
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
-                      ),
+
                     ],
                   ),
                 ],
@@ -691,7 +616,157 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  //conseil section
+  Widget _buildHealthTipsSection() {
+    final List<Map<String, dynamic>> _healthTips = [
+      {
+        'title': 'Hydratation',
+        'description': 'Buvez au moins 1,5L d\'eau par jour',
+        'icon': Icons.water_drop,
+        'color': Colors.blue,
+      },
+      {
+        'title': 'Activité physique',
+        'description': '30 min de marche quotidienne',
+        'icon': Icons.directions_walk,
+        'color': successGreen,
+      },
+      {
+        'title': 'Sommeil',
+        'description': '7-8h de sommeil réparateur',
+        'icon': Icons.bedtime,
+        'color': primaryPurple,
+      },
+      {
+        'title': 'Alimentation',
+        'description': '5 fruits et légumes par jour',
+        'icon': Icons.restaurant,
+        'color': accentOrange,
+      },
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: warningYellow,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Conseils santé du jour',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.2,
+            ),
+            itemCount: _healthTips.length,
+            itemBuilder: (context, index) {
+              return _buildHealthTipCard(_healthTips[index]);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  //card conseil section
+  Widget _buildHealthTipCard(Map<String, dynamic> tip) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: tip['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                tip['icon'],
+                color: tip['color'],
+                size: 18,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              tip['title'],
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              tip['description'],
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //temoignage section
   Widget _buildTestimonialsSection() {
+    final List<Map<String, dynamic>> _testimonials = [
+      {
+        'id': 't1',
+        'author': 'Marie, 42 ans',
+        'text': 'Cette communauté m\'a donné la force de me battre quand j\'étais au plus bas. Merci à tous pour votre soutien.',
+        'avatar': 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+        'rating': 5
+      },
+      {
+        'id': 't2',
+        'author': 'Pierre, 35 ans',
+        'text': 'Les conseils partagés ici m\'ont aidé à mieux comprendre les traitements et à moins les subir.',
+        'avatar': 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+        'rating': 5
+      },
+    ];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -750,6 +825,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  //card temoignage section
   Widget _buildModernTestimonialCard(Map<String, dynamic> testimonial) {
     return Container(
       decoration: BoxDecoration(
@@ -841,7 +917,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
+  //message d'espoir section
   Widget _buildDailyHopeSection() {
+    final String _dailyHopeMessage = "Aujourd'hui, souvenez-vous que chaque petit progrès compte. La guérison est un chemin, pas une destination.";
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -937,15 +1016,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   // Méthodes de navigation
-  void _navigateToArticleDetail(String articleId) {
+  void _navigateToArticleDetail(int articleId) {
     print('Navigation vers article $articleId');
   }
 
   void _navigateToAllArticles() {
-    print('Navigation vers tous les articles');
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => ArticlePage()),
+    );
   }
 
   void _navigateToAllTestimonials() {
     print('Navigation vers tous les témoignages');
+  }
+
+  void _navigateToDonationPage() {
+    print('Navigation vers la page de don');
   }
 }

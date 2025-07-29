@@ -59,7 +59,6 @@ flutter:
       - assets/
       - assets/fake/
       - assets/communaute/
-      - assets/article/
       - .env
   #   - images/a_dot_ham.jpeg
 
