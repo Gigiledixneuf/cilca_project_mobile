@@ -1,19 +1,36 @@
-// create a state class for the home page
 
 import '../../business/models/article/article.dart';
 
 class HomeState {
-  List<Article>? articles;
-  bool? isLoading = false;
-  String? error;
+  final bool isLoading;
+  final String? error;
+  final List<Article> featuredArticles;
+  final List<Article> latestArticles;
 
-  HomeState({this.articles, this.isLoading, this.error});
+  HomeState({
+    required this.isLoading,
+    this.error,
+    required this.featuredArticles,
+    required this.latestArticles,
+  });
 
-  HomeState copyWith({List<Article>? articles, bool? isLoading, String? error}) {
-    return HomeState(articles: articles ?? this.articles, isLoading: isLoading ?? this.isLoading, error: error ?? this.error);
+  factory HomeState.initial() => HomeState(
+    isLoading: false,
+    featuredArticles: [],
+    latestArticles: [],
+  );
+
+  HomeState copyWith({
+    bool? isLoading,
+    String? error,
+    List<Article>? featuredArticles,
+    List<Article>? latestArticles,
+  }) {
+    return HomeState(
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+      featuredArticles: featuredArticles ?? this.featuredArticles,
+      latestArticles: latestArticles ?? this.latestArticles,
+    );
   }
-  
-  
 }
-
-
