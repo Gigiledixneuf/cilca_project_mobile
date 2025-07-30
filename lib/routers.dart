@@ -73,9 +73,9 @@ final routerConfigProvider = Provider<GoRouter>((ref) {
         }),
     GoRoute(
         path: "/public/article_single",
-        name: "article_single_page",
+        name: "article_esingle_page",
         builder: (ctx, state){
-          return ArticleDetailPage();
+          return ArticleSinglePage();
         }),
   ];
 
