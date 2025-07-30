@@ -89,7 +89,6 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                _buildModernFilterSection(),
                 const SizedBox(height: 32),
                 if (state.isLoading && state.featuredArticles.isEmpty)
                   const Padding(
@@ -185,84 +184,6 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildModernFilterSection() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Découvrez',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildModernFilterChip('Ressources & Traditions'),
-                const SizedBox(width: 12),
-                _buildModernFilterChip('Témoignages'),
-                const SizedBox(width: 12),
-                _buildModernFilterChip('Médias'),
-                const SizedBox(width: 12),
-                _buildModernFilterChip('Conseils'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernFilterChip(String label, {bool isSelected = true}) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        gradient: isSelected
-            ? const LinearGradient(
-          colors: [accentOrange, Color(0xFFFF8A65)],
-        )
-            : null,
-        color: isSelected ? null : Colors.grey[100],
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: isSelected
-            ? [
-          BoxShadow(
-            color: accentOrange.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ]
-            : null,
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black87,
-          fontSize: 14,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-        ),
-      ),
     );
   }
 
@@ -760,10 +681,17 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
       },
       {
         'id': 't2',
-        'author': 'Pierre, 35 ans',
+        'author': 'Alain, 35 ans',
         'text': 'Les conseils partagés ici m\'ont aidé à mieux comprendre les traitements et à moins les subir.',
         'avatar': 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
         'rating': 5
+      },
+      {
+        'id': 't3',
+        'author': 'Sonnic, 30 ans',
+        'text': 'Les conseils partagés ici m\'ont aidé à mieux comprendre les traitements et à moins les subir.',
+        'avatar': 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+        'rating': 3
       },
     ];
 

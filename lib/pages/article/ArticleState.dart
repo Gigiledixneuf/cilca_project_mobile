@@ -1,33 +1,38 @@
-import 'package:odc_mobile_template/business/models/article/article.dart';
+import '../../business/models/article/article.dart';
+import '../../business/models/article/category.dart';
 
 class ArticleState {
-  final List<Article> articles;
-  final bool? isLoading;
+  final bool isLoadingArticles;
+  final bool isLoadingCategories;
   final String? error;
+  final List<Article> articles;
+  final List<ArticleCategory> categories;
+  final String? selectedCategory;
 
   ArticleState({
-    required this.articles,
-    this.isLoading,
+    this.isLoadingArticles = false,
+    this.isLoadingCategories = false,
     this.error,
+    this.articles = const [],
+    this.categories = const [],
+    this.selectedCategory,
   });
 
-  factory ArticleState.initial() {
-    return ArticleState(
-      articles : [],
-      isLoading: false,
-      error: null,
-    );
-  }
-
   ArticleState copyWith({
-    List<Article>? articles,
-    bool? isLoading,
+    bool? isLoadingArticles,
+    bool? isLoadingCategories,
     String? error,
+    List<Article>? articles,
+    List<ArticleCategory>? categories,
+    String? selectedCategory,
   }) {
     return ArticleState(
-      articles : articles ?? this.articles,
-      isLoading: isLoading ?? this.isLoading,
+      isLoadingArticles: isLoadingArticles ?? this.isLoadingArticles,
+      isLoadingCategories: isLoadingCategories ?? this.isLoadingCategories,
       error: error ?? this.error,
+      articles: articles ?? this.articles,
+      categories: categories ?? this.categories,
+      selectedCategory: selectedCategory,
     );
   }
 }
