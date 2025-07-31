@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:odc_mobile_template/business/models/article/article.dart';
 import 'package:odc_mobile_template/main.dart';
@@ -240,7 +241,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     final formattedDate = DateFormat('dd MMM yyyy').format(article.date);
 
     return GestureDetector(
-      onTap: () => _navigateToArticleDetail(article.id),
+      onTap: () => GoRouter.of(context).push('/public/articles/${article.id}'),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -414,12 +415,12 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     );
   }
 
-  //card pour recuperer les 5 derniers articles
+  // Carte pour afficher les derniers articles
   Widget _buildModernLatestArticleCard(Article article) {
     final formattedDate = DateFormat('dd MMM yyyy').format(article.date);
 
     return GestureDetector(
-      onTap: () => _navigateToArticleDetail(article.id),
+      onTap: () => GoRouter.of(context).push('/public/articles/${article.id}'),
       child: Container(
         width: 350,
         decoration: BoxDecoration(
@@ -436,6 +437,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Image avec badge de catégorie
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: Stack(
@@ -492,11 +494,13 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                 ],
               ),
             ),
+            // Contenu texte
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Titre de l'article
                   Text(
                     article.title,
                     style: const TextStyle(
@@ -508,24 +512,64 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+
+                  // Date et bouton Lire la suite
                   Row(
                     children: [
-                      Icon(
-                        Icons.calendar_month_sharp,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                       Text(
-                        formattedDate,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                      // Date
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month_sharp,
+                            size: 14,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            formattedDate,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                       const Spacer(),
 
+                      // Bouton Lire la suite
+                      InkWell(
+                        onTap: () => GoRouter.of(context).push('/public/articles/${article.id}'),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: primaryPurple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Lire la suite',
+                                style: TextStyle(
+                                  color: primaryPurple,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward,
+                                size: 14,
+                                color: primaryPurple,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -943,10 +987,6 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     );
   }
 
-  // Méthodes de navigation
-  void _navigateToArticleDetail(int articleId) {
-    print('Navigation vers article $articleId');
-  }
 
   void _navigateToAllArticles() {
     Navigator.of(context).push(
@@ -955,7 +995,9 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
   }
 
   void _navigateToAllTestimonials() {
-    print('Navigation vers tous les témoignages');
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => ArticlePage()),
+    );
   }
 
   void _navigateToDonationPage() {

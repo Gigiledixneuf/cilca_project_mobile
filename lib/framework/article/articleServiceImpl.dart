@@ -7,7 +7,6 @@ import 'package:odc_mobile_template/business/services/article/articleNetworkServ
 import 'package:odc_mobile_template/framework/utils/http/localHttpUtils.dart';
 import 'package:odc_mobile_template/utils/http/HttpRequestException.dart';
 import 'package:odc_mobile_template/utils/http/HttpUtils.dart';
-
 import '../../business/models/article/category.dart';
 
 class ArticleServiceImpl extends ArticleNetworkService {
@@ -28,12 +27,9 @@ class ArticleServiceImpl extends ArticleNetworkService {
     var url = '$baseUrl/wp/v2/posts?_embed';
     print('url $url');
     var response = await httpUtils.getData(url);
-
     var data = jsonDecode(response);
 
-    List<Article> article = (data as List).map((item) =>
-        Article.fromJson(item, imageUrl: imageUrl)
-    ).toList();
+    List<Article> article = (data as List).map((item) => Article.fromJson(item, imageUrl: imageUrl)).toList();
     return article;
   }
 
@@ -62,17 +58,14 @@ class ArticleServiceImpl extends ArticleNetworkService {
     }
 
     // 4. Récupérer les articles de cette catégorie
-    final postsUrl =
-        '$baseUrl/wp/v2/posts?_embed&per_page=3&categories=$actualiteCategoryId';
+    final postsUrl = '$baseUrl/wp/v2/posts?_embed&per_page=3&categories=$actualiteCategoryId';
     print('Fetching articles from: $postsUrl');
 
     final postsResponse = await httpUtils.getData(postsUrl);
     final postsData = jsonDecode(postsResponse);
 
     // 5. Convertir les données JSON en objets Article
-    return (postsData as List)
-        .map((item) => Article.fromJson(item, imageUrl: imageUrl))
-        .toList();
+    return (postsData as List).map((item) => Article.fromJson(item, imageUrl: imageUrl)).toList();
   }
 
   @override
@@ -145,9 +138,6 @@ class ArticleServiceImpl extends ArticleNetworkService {
 
     return categories;
   }
-
-
-
 
 }
 

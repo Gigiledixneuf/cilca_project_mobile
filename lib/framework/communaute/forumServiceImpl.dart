@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 
+import 'package:odc_mobile_template/business/models/communaute/reply.dart';
+import 'package:odc_mobile_template/business/models/communaute/topic.dart';
 import 'package:odc_mobile_template/utils/http/HttpUtils.dart';
 
 import '../../business/models/communaute/forum.dart';
@@ -30,29 +32,47 @@ class ForumServiceImpl extends ForumNetworkService{
 
   }
 
+  @override
+  Future<List<Topic>> getTopicsForum(int id) async{
+    var url = '$baseUrl/wp/v2/forums/$id/topics';
+    var response = await httpUtils.getData(url);
+    var data = jsonDecode(response);
+
+    List<Topic> topics = (data as List).map((item)=> Topic.fromJson(item)).toList();
+    return topics;
+  }
+
+  @override
+  Future<List<Reply>> getRepliesTopic(int id) async {
+    var url = '$baseUrl/wp/v2/topics/$id/replies';
+    var response = await httpUtils.getData(url);
+    var data = jsonDecode(response);
+    List<Reply> replies = (data as List).map((item)=> Reply.fromJson(item)).toList();
+    return replies;
+  }
+
 }
 
 void main() async{
   var service = ForumServiceImpl(
-    baseUrl: "http://10.252.252.29/wordpress_odc/cilca5/wp-json",
+    baseUrl: "http://172.20.10.2/wordpress_odc/cilca5/wp-json",
     httpUtils: LocalHttpUtils(),
   );
 
   try {
-    var forumsList = await service.getForums();
-    for (var list in forumsList) {
-      print("Recuperation des forums");
+    var topics = await service.getRepliesTopic(1396);
+    for (var list in topics) {
+      print("Recuperation comments du sujet");
       print("========================");
       print(list.id);
-      print(list.title);
-      print(list.description);
-      print(list.slug);
-      print(list.subscriberCount);
-      print(list.hardcodedImage);
+      print(list.content);
+      print(list.author);
+      print(list.link);
+      print(list.date);
       print("=======================");
     }
   } catch (e, stack) {
-    print('Erreur lors de la récupération des forums : $e');
+    print('Erreur lors de la récupération sujets des forums : $e');
     print('Stacktrace : $stack');
   }
 

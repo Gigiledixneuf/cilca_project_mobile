@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'ArticleCtrl.dart';
 import 'ArticleState.dart';
 
@@ -68,6 +69,32 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
           letterSpacing: 0.5,
         ),
       ),
+      actions: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ElevatedButton.icon(
+            onPressed: _navigateToDonationPage,
+            icon: const Icon(Icons.favorite, color: Colors.red, size: 18),
+            label: const Text(
+              'Faire un don',
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              elevation: 4,
+              shadowColor: Colors.black26,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -105,7 +132,6 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
       ),
     );
   }
-
 
   Widget _buildCategoryChip(
       String label, {
@@ -148,7 +174,6 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
     );
   }
 
-
   Widget _buildNewsCards(ArticleState state) {
     final articles = state.articles;
     final isLoadingArticles = state.isLoadingArticles ?? false;
@@ -189,7 +214,7 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
             desc: article.desc,
             category: article.category,
             date: article.date,
-            onTap: () {},
+            onTap: () => GoRouter.of(context).push('/public/articles/${article.id}'),
           );
         }).toList(),
       ),
@@ -271,11 +296,7 @@ class NewsCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFE91E63), Color(0xFFAD1457)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
+                            color: Color(0xFF7B4397),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -344,4 +365,7 @@ class NewsCard extends StatelessWidget {
       ),
     );
   }
+}
+void _navigateToDonationPage() {
+  print('Navigation vers la page de don');
 }

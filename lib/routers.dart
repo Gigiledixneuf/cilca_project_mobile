@@ -71,12 +71,16 @@ final routerConfigProvider = Provider<GoRouter>((ref) {
         builder: (ctx, state){
           return ArticlePage();
         }),
+
     GoRoute(
-        path: "/public/article_single",
-        name: "article_esingle_page",
-        builder: (ctx, state){
-          return ArticleSinglePage();
-        }),
+      // Utilisation de :id comme paramètre
+      path: '/public/articles/:id',
+      name: 'article_single',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!; // Récupération du paramètre
+        return ArticleSinglePage(articleId: int.parse(id)); // Conversion en int
+      },
+    ),
   ];
 
   /*
