@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:odc_mobile_template/business/models/communaute/forum.dart';
+import '../topicsForum/TopicsForumPage.dart';
 import 'ForumCtrl.dart';
 
 class ForumPage extends ConsumerStatefulWidget {
@@ -288,18 +289,25 @@ class _ForumPageState extends ConsumerState<ForumPage> {
       );
     }
 
-    //@TODO : rajouter la redirection vers une page de sujets en passant l'id dans le button et route
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: forums.map<Widget>((forum) {
           return ForumCard(
             forum: forum,
-            onTap: () {
-              debugPrint("Forum tapé : ${forum.title}");
-              // Tu peux naviguer ici vers une page de sujets
-              // Navigator.push(...);
-            },
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TopicsForumPage(
+                      forumId: forum.id,
+                      forumName: forum.title,
+                    ),
+                  ),
+                );
+              }
+
+
           );
         }).toList(),
       ),
